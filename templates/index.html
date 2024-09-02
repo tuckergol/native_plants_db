@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html>
 <head>
     <title>Native Plant Tracking System</title>
@@ -10,8 +9,50 @@
 </head>
 <body>
     <h1>Native Plant Data</h1>
+    
+    <!-- Search Form -->
+    <form method="POST" action="/">
+        <input type="text" name="common_name" placeholder="Search for a plant">
+        <button type="submit">Search</button>
+    </form>
+
+    <!-- Add a link to view logs -->
+    <p>
+        <a href="/view_logs">View Logged Plants</a>
+    </p>
+    
+    <!-- Search Results -->
+    <h2>Search Results</h2>
+    {% if search_results %}
     <table class="data">
-        {{ tables|safe }}
+        <thead>
+            <tr>
+                <th>Common Name</th>
+                <th>Latin Name</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for plant in search_results %}
+            <tr>
+                <td>{{ plant[0] }}</td> <!-- Adjusted for Common Name -->
+                <td>{{ plant[1] }}</td> <!-- Adjusted for Latin Name (botanical_name) -->
+                <td>
+                    <form method="POST" action="/log">
+                        <input type="hidden" name="common_name" value="{{ plant[0] }}">
+                        <input type="hidden" name="botanical_name" value="{{ plant[1] }}">
+                        <label><input type="checkbox" name="locations" value="Olive Grove"> Olive Grove</label>
+                        <label><input type="checkbox" name="locations" value="The Plateau"> The Plateau</label>
+                        <label><input type="checkbox" name="locations" value="Field"> Field</label>
+                        <button type="submit">Log Plant</button>
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
     </table>
+    {% else %}
+    <p>No results found.</p>
+    {% endif %}
 </body>
 </html>

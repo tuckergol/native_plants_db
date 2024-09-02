@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Plant Logs</title>
+    <style>
+        .data { width: 100%; border-collapse: collapse; }
+        .data th, .data td { border: 1px solid black; padding: 8px; }
+        .data th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <h1>Logged Plant Data</h1>
+    <table class="data">
+        <thead>
+            <tr>
+                <th>Common Name</th>
+                <th>Latin Name</th>
+                <th>Locations</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in log_data %}
+            <tr>
+                <td>{{ log[1] }}</td>  <!-- Common Name -->
+                <td>{{ log[2] }}</td>  <!-- Latin Name -->
+                <td>{{ log[3] }}</td>  <!-- Locations -->
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="/">Back to Home</a>
+</body>
+</html>
