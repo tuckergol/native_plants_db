@@ -1,0 +1,18 @@
+<html>
+<head>
+    <title>Log Plant</title>
+</head>
+<body>
+    <h1>Log Plant: {{ common_name }}</h1>
+    
+    <form method="POST" action="/log_plant">
+        <input type="hidden" name="common_name" value="{{ common_name }}">
+        
+        <label><input type="checkbox" name="locations" value="Olive Grove"> Olive Grove</label><br>
+        <label><input type="checkbox" name="locations" value="The Plateau"> The Plateau</label><br>
+        <label><input type="checkbox" name="locations" value="Field"> Field</label><br>
+        
+        <button type="submit">Log Plant</button>
+    </form>
+</body>
+</html>

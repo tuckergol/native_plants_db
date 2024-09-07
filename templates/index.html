@@ -9,18 +9,16 @@
 </head>
 <body>
     <h1>Native Plant Data</h1>
-    
+
+    <!-- Link to view logs -->
+    <a href="/view_logs">View Logs</a>
+
     <!-- Search Form -->
     <form method="POST" action="/">
         <input type="text" name="common_name" placeholder="Search for a plant">
         <button type="submit">Search</button>
     </form>
 
-    <!-- Add a link to view logs -->
-    <p>
-        <a href="/view_logs">View Logged Plants</a>
-    </p>
-    
     <!-- Search Results -->
     <h2>Search Results</h2>
     {% if search_results %}
@@ -35,16 +33,12 @@
         <tbody>
         {% for plant in search_results %}
             <tr>
-                <td>{{ plant[0] }}</td> <!-- Adjusted for Common Name -->
-                <td>{{ plant[1] }}</td> <!-- Adjusted for Latin Name (botanical_name) -->
+                <td>{{ plant[0] }}</td>
+                <td>{{ plant[1] }}</td>
                 <td>
-                    <form method="POST" action="/log">
+                    <form method="GET" action="/log_plant">
                         <input type="hidden" name="common_name" value="{{ plant[0] }}">
-                        <input type="hidden" name="botanical_name" value="{{ plant[1] }}">
-                        <label><input type="checkbox" name="locations" value="Olive Grove"> Olive Grove</label>
-                        <label><input type="checkbox" name="locations" value="The Plateau"> The Plateau</label>
-                        <label><input type="checkbox" name="locations" value="Field"> Field</label>
-                        <button type="submit">Log Plant</button>
+                        <button type="submit">Select</button>
                     </form>
                 </td>
             </tr>
