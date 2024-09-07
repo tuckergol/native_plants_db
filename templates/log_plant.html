@@ -1,17 +1,46 @@
 <html>
 <head>
-    <title>Log Plant</title>
+    <title>Log Plant Data</title>
+    <style>
+        .form-section {
+            margin-bottom: 20px;
+        }
+        .form-section label {
+            display: block;
+            margin-bottom: 10px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Log Plant: {{ common_name }}</h1>
-    
-    <form method="POST" action="/log_plant">
+    <h1>Log Data for {{ common_name }}</h1>
+
+    <a href="/">Back to Home</a>
+    <br><br>
+
+    <form method="POST" action="/log">
         <input type="hidden" name="common_name" value="{{ common_name }}">
         
-        <label><input type="checkbox" name="locations" value="Olive Grove"> Olive Grove</label><br>
-        <label><input type="checkbox" name="locations" value="The Plateau"> The Plateau</label><br>
-        <label><input type="checkbox" name="locations" value="Field"> Field</label><br>
+        <!-- Location -->
+        <div class="form-section">
+        <h2>Location Selection</h2>
+            <label><input type="checkbox" name="locations" value="Olive Grove"> Olive Grove</label>
+            <label><input type="checkbox" name="locations" value="The Plateau"> The Plateau</label>
+            <label><input type="checkbox" name="locations" value="Field"> Field</label>
+        </div>
         
+        <!-- Status -->
+        <div class="form-section">
+        <h2>Status</h2>
+            <label><input type="radio" name="status" value="Present" required> Present</label>
+            <label><input type="radio" name="status" value="Blooming"> Blooming</label>
+            <label><input type="radio" name="status" value="Seeding"> Seeding</label>
+        </div>
+
+        <!-- Week number -->
+        <label for="week">Week number:</label>
+        <input type="number" id="week" name="week" min="1" max="56" required>
+
+        <br><br>
         <button type="submit">Log Plant</button>
     </form>
 </body>

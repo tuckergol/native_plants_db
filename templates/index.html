@@ -13,21 +13,21 @@
     <!-- Link to view logs -->
     <a href="/view_logs">View Logs</a>
 
-    <!-- Search Form -->
+    <!-- Search form -->
     <form method="POST" action="/">
         <input type="text" name="common_name" placeholder="Search for a plant">
         <button type="submit">Search</button>
     </form>
 
-    <!-- Search Results -->
+    <!-- Search results -->
     <h2>Search Results</h2>
     {% if search_results %}
     <table class="data">
         <thead>
             <tr>
-                <th>Common Name</th>
-                <th>Latin Name</th>
-                <th>Actions</th>
+                <th>Common plant name</th>
+                <th>Latin plant name</th>
+                <th>Create plant log</th>
             </tr>
         </thead>
         <tbody>
@@ -39,7 +39,7 @@
                     <form method="GET" action="/log_plant">
                         <input type="hidden" name="common_name" value="{{ plant[0] }}">
                         <button type="submit">Select</button>
-                    </form>
+                    </form>                    
                 </td>
             </tr>
         {% endfor %}

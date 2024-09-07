@@ -18,8 +18,8 @@ def init_db():
         CREATE TABLE IF NOT EXISTS logs (
             id INTEGER PRIMARY KEY,
             common_name TEXT,
-            botanical_name TEXT,
-            locations TEXT
+            locations TEXT,
+            status TEXT
         )
         ''')
 init_db()
@@ -40,19 +40,22 @@ def log_plant_page():
     common_name = request.args.get('common_name')
     return render_template('log_plant.html', common_name=common_name)
 
-@app.route('/log_plant', methods=['POST'])
+@app.route('/log', methods=['POST'])
 def log_plant():
     common_name = request.form.get('common_name')
     locations = request.form.getlist('locations')
     locations_str = ', '.join(locations)
+    status = request.form.get('status')
+    week = request.form.get('week')
+    
+    # Combine status and week for logging
+    status_log = f"Week {week}, {status}"
     
     # Insert into logs database
     with sqlite3.connect('native_plants.db') as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT botanical_name FROM plants WHERE common_name = ?", (common_name,))
-        botanical_name = cursor.fetchone()[0]
-        cursor.execute("INSERT INTO logs (common_name, botanical_name, locations) VALUES (?, ?, ?)", 
-                       (common_name, botanical_name, locations_str))
+        cursor.execute("INSERT INTO logs (common_name, locations, status) VALUES (?, ?, ?)",
+                       (common_name, locations_str, status_log))
         conn.commit()
     
     return redirect(url_for('index'))

@@ -15,17 +15,17 @@
     <table class="data">
         <thead>
             <tr>
-                <th>Common Name</th>
-                <th>Latin Name</th>
-                <th>Locations</th>
+                <th>Common plant name</th>
+                <th>Location(s)</th>
+                <th>Status at time of log</th>
             </tr>
         </thead>
         <tbody>
             {% for log in log_data %}
             <tr>
-                <td>{{ log[1] }}</td>  <!-- Common Name -->
-                <td>{{ log[2] }}</td>  <!-- Latin Name -->
-                <td>{{ log[3] }}</td>  <!-- Locations -->
+                <td>{{ log[1] }}</td>  <!-- Common name -->
+                <td>{{ log[2] }}</td>  <!-- Location -->
+                <td>{{ log[3] }}</td>  <!-- Status -->
             </tr>
             {% endfor %}
         </tbody>
