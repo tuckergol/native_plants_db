@@ -19,7 +19,8 @@ def init_db():
             id INTEGER PRIMARY KEY,
             common_name TEXT,
             locations TEXT,
-            status TEXT
+            status TEXT,
+            time TEXT
         )
         ''')
 init_db()
@@ -43,19 +44,19 @@ def log_plant_page():
 @app.route('/log', methods=['POST'])
 def log_plant():
     common_name = request.form.get('common_name')
-    locations = request.form.getlist('locations')
-    locations_str = ', '.join(locations)
+    location = request.form.get('locations')
     status = request.form.get('status')
     week = request.form.get('week')
+    year = request.form.get('year')
     
-    # Combine status and week for logging
-    status_log = f"Week {week}, {status}"
+    # Combine year and week for 'time' column
+    time_log = f"{year}, Week {week}"
     
     # Insert into logs database
     with sqlite3.connect('native_plants.db') as conn:
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO logs (common_name, locations, status) VALUES (?, ?, ?)",
-                       (common_name, locations_str, status_log))
+        cursor.execute("INSERT INTO logs (common_name, locations, status, time) VALUES (?, ?, ?, ?)",
+                       (common_name, location, status, time_log))
         conn.commit()
     
     return redirect(url_for('index'))
@@ -68,7 +69,6 @@ def view_logs():
         cursor.execute("SELECT * FROM logs")
         log_data = cursor.fetchall()
     return render_template('view_logs.html', log_data=log_data)
-
 
 if __name__ == '__main__':
     app.run(debug=True)
