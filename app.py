@@ -20,7 +20,7 @@ def init_db():
             common_name TEXT,
             locations TEXT,
             status TEXT,
-            time TEXT
+            date TEXT
         )
         ''')
 init_db()
@@ -44,19 +44,21 @@ def log_plant_page():
 @app.route('/log', methods=['POST'])
 def log_plant():
     common_name = request.form.get('common_name')
-    location = request.form.get('locations')
+    locations = request.form.get('locations')
     status = request.form.get('status')
-    week = request.form.get('week')
+
+    month = request.form.get('month').zfill(2)  # Pads single digits with leading zero
+    day = request.form.get('day').zfill(2)      # Pads single digits with leading zero
     year = request.form.get('year')
     
-    # Combine year and week for 'time' column
-    time_log = f"{year}, Week {week}"
+    # Combine month, day, and year into MM/DD/YYYY format
+    date = f"{month}/{day}/{year}"
     
     # Insert into logs database
     with sqlite3.connect('native_plants.db') as conn:
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO logs (common_name, locations, status, time) VALUES (?, ?, ?, ?)",
-                       (common_name, location, status, time_log))
+        cursor.execute("INSERT INTO logs (common_name, locations, status, date) VALUES (?, ?, ?, ?)",
+                       (common_name, locations, status, date))
         conn.commit()
     
     return redirect(url_for('index'))
