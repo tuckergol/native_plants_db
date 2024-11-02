@@ -17,6 +17,10 @@
 <body>
     <h1>Log Data for {{ common_name }}</h1>
 
+    {% if current_user.username %}
+        <p>Logged in as {{ current_user.username }}. <a href="/logout">Logout</a></p>
+    {% endif %}
+    
     <a href="/">Back to Home</a>
     <br><br>
 
@@ -25,7 +29,7 @@
         
         <!-- Location -->
         <div class="form-section">
-        <h2>Location found</h2>
+            <h2>Location found</h2>
             <label><input type="radio" name="locations" value="Olive Grove" required> Olive Grove</label>
             <label><input type="radio" name="locations" value="The Plateau"> The Plateau</label>
             <label><input type="radio" name="locations" value="Field"> Field</label>
@@ -33,7 +37,7 @@
         
         <!-- Status -->
         <div class="form-section">
-        <h2>Current status</h2>
+            <h2>Current status</h2>
             <label><input type="radio" name="status" value="Present" required> Present</label>
             <label><input type="radio" name="status" value="Blooming"> Blooming</label>
             <label><input type="radio" name="status" value="Seed ready for collection"> Seed ready for collection</label>
@@ -41,14 +45,11 @@
             <label><input type="radio" name="status" value="Seed already dispersed"> Seed already dispersed</label>
         </div>
 
-        <!-- Date -->
+        <!-- Date Input -->
         <div>
             <h2>Date</h2>
-            <label for="month"></label>
             <input type="number" id="month" name="month" min="1" max="12" placeholder="MM" required>
-            <label for="day">/</label>
             <input type="number" id="day" name="day" min="1" max="31" placeholder="DD" required>
-            <label for="year">/</label>
             <input type="number" id="year" name="year" min="1000" max="9999" placeholder="YYYY" required>
         </div>
 
