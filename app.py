@@ -4,7 +4,6 @@ from flask_login import LoginManager, UserMixin, login_user, logout_user, login_
 import sqlite3
 
 app = Flask(__name__)
-app.secret_key = '5879525e56541bdc293ebc85669f138233abde93e8399bd5'
 bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
