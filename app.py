@@ -4,6 +4,7 @@ from flask_login import LoginManager, UserMixin, login_user, logout_user, login_
 import sqlite3
 
 app = Flask(__name__)
+app.secret_key = '5879525e56541bdc293ebc85669f138233abde93e8399bd5'
 bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
@@ -74,7 +75,7 @@ def signup():
         password = request.form['password']
         hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
         
-        # Save the new user
+        # Save new user
         with sqlite3.connect('native_plants.db') as conn:
             cursor = conn.cursor()
             cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
@@ -145,7 +146,7 @@ def log_plant():
     
     return redirect(url_for('index'))
 
-# View plant logs
+# View logs
 @app.route('/view_logs')
 @login_required
 def view_logs():
@@ -154,6 +155,18 @@ def view_logs():
         cursor.execute("SELECT * FROM logs WHERE user_id = ?", (current_user.id,))
         log_data = cursor.fetchall()
     return render_template('view_logs.html', log_data=log_data)
+
+# Delete log
+@app.route('/delete_log/<int:log_id>', methods=['POST'])
+@login_required
+def delete_log(log_id):
+    with sqlite3.connect('native_plants.db') as conn:
+        cursor = conn.cursor()
+        # Ensure log belongs to current user before deleting
+        cursor.execute("DELETE FROM logs WHERE id = ? AND user_id = ?", (log_id, current_user.id))
+        conn.commit()
+    flash('Log deleted successfully!', 'success')
+    return redirect(url_for('view_logs'))
 
 if __name__ == '__main__':
     app.run(debug=True)
