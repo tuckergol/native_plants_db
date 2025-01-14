@@ -1,0 +1,34 @@
+<html>
+<head>
+    <title>Manage Locations</title>
+    <script>
+        // Function to confirm deletion
+        function confirmDelete(event, locationId) {
+            if (!confirm("Are you sure you want to delete this location?")) {
+                event.preventDefault();  // Prevent form submission if not confirmed
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Manage Locations</h1>
+    <a href="/">Back to Home</a>
+    <form method="POST" action="/manage_locations">
+        <label for="location_name">Add a new location:</label>
+        <input type="text" id="location_name" name="location_name" required>
+        <button type="submit">Add Location</button>
+    </form>
+
+    <h2>Your Locations</h2>
+    <ul>
+        {% for location in locations %}
+        <li>
+            {{ location[2] }}
+            <form action="{{ url_for('delete_location', location_id=location[0]) }}" method="POST" style="display:inline;" onsubmit="confirmDelete(event, {{ location[0] }})">
+                <button type="submit">Delete</button>
+            </form>
+        </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

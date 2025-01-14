@@ -26,7 +26,7 @@ def load_user(user_id):
             return User(id=user[0], username=user[1], password=user[2])
     return None
 
-# Initialize plant and user databases
+# Initialize plant, user, and location databases
 def init_db():
     with sqlite3.connect('native_plants.db') as conn:
         cursor = conn.cursor()
@@ -55,6 +55,14 @@ def init_db():
             FOREIGN KEY (user_id) REFERENCES users (id)
         )
         ''')
+        cursor.execute('''
+        CREATE TABLE IF NOT EXISTS locations (
+            id INTEGER PRIMARY KEY,
+            user_id INTEGER,
+            location_name TEXT,
+            FOREIGN KEY (user_id) REFERENCES users (id)
+        )
+        ''')
 init_db()
 
 @app.route('/', methods=['GET', 'POST'])
@@ -75,7 +83,6 @@ def signup():
         password = request.form['password']
         hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
         
-        # Save new user
         with sqlite3.connect('native_plants.db') as conn:
             cursor = conn.cursor()
             cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
@@ -87,7 +94,7 @@ def signup():
             conn.commit()
 
         flash('Account created successfully! You can now log in.', 'success')
-        return redirect(url_for('index'))  # Redirect to home after signup
+        return redirect(url_for('index'))
 
     return render_template('signup.html')
 
@@ -106,9 +113,9 @@ def login():
                 user_obj = User(id=user[0], username=user[1], password=user[2])
                 login_user(user_obj)
                 flash('Logged in successfully!', 'success')
-                return redirect(url_for('index'))  # Redirect to home after login
+                return redirect(url_for('index'))
             else:
-                flash('Invalid username or password. Please try again.', 'danger')  # Flash error message
+                flash('Invalid username or password. Please try again.', 'danger')
 
     return render_template('login.html')
 
@@ -119,34 +126,62 @@ def logout():
     return redirect(url_for('index'))
 
 @app.route('/log_plant', methods=['GET'])
+@login_required
 def log_plant_page():
-    common_name = request.args.get('common_name')
-    return render_template('log_plant.html', common_name=common_name)
+    with sqlite3.connect('native_plants.db') as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM locations WHERE user_id = ?", (current_user.id,))
+        locations = cursor.fetchall()
+    return render_template('log_plant.html', common_name=request.args.get('common_name'), locations=locations)
 
 @app.route('/log', methods=['POST'])
 @login_required
 def log_plant():
     common_name = request.form.get('common_name')
-    locations = request.form.get('locations')
+    selected_location = request.form.get('locations')
+    custom_location = request.form.get('custom_location')
+    location = selected_location if selected_location else custom_location
     status = request.form.get('status')
 
-    month = request.form.get('month').zfill(2)  # Pads single digits with leading zero
-    day = request.form.get('day').zfill(2)      # Pads single digits with leading zero
+    month = request.form.get('month').zfill(2)
+    day = request.form.get('day').zfill(2)
     year = request.form.get('year')
-    
-    # Combine month, day, and year into MM/DD/YYYY format
     date = f"{month}/{day}/{year}"
     
-    # Insert into logs database
     with sqlite3.connect('native_plants.db') as conn:
         cursor = conn.cursor()
         cursor.execute("INSERT INTO logs (user_id, common_name, locations, status, date) VALUES (?, ?, ?, ?, ?)",
-                       (current_user.id, common_name, locations, status, date))
+                       (current_user.id, common_name, location, status, date))
         conn.commit()
     
     return redirect(url_for('index'))
 
-# View logs
+@app.route('/manage_locations', methods=['GET', 'POST'])
+@login_required
+def manage_locations():
+    with sqlite3.connect('native_plants.db') as conn:
+        cursor = conn.cursor()
+        if request.method == 'POST':
+            location_name = request.form.get('location_name')
+            cursor.execute("INSERT INTO locations (user_id, location_name) VALUES (?, ?)",
+                           (current_user.id, location_name))
+            conn.commit()
+            flash('Location added successfully!', 'success')
+
+        cursor.execute("SELECT * FROM locations WHERE user_id = ?", (current_user.id,))
+        locations = cursor.fetchall()
+    return render_template('manage_locations.html', locations=locations)
+
+@app.route('/delete_location/<int:location_id>', methods=['POST'])
+@login_required
+def delete_location(location_id):
+    with sqlite3.connect('native_plants.db') as conn:
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM locations WHERE id = ? AND user_id = ?", (location_id, current_user.id))
+        conn.commit()
+    flash('Location deleted successfully!', 'success')
+    return redirect(url_for('manage_locations'))
+
 @app.route('/view_logs')
 @login_required
 def view_logs():
@@ -156,13 +191,11 @@ def view_logs():
         log_data = cursor.fetchall()
     return render_template('view_logs.html', log_data=log_data)
 
-# Delete log
 @app.route('/delete_log/<int:log_id>', methods=['POST'])
 @login_required
 def delete_log(log_id):
     with sqlite3.connect('native_plants.db') as conn:
         cursor = conn.cursor()
-        # Ensure log belongs to current user before deleting
         cursor.execute("DELETE FROM logs WHERE id = ? AND user_id = ?", (log_id, current_user.id))
         conn.commit()
     flash('Log deleted successfully!', 'success')
